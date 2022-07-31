@@ -124,9 +124,11 @@ is usually the case with the metrics. Current design of the metricsDB can be ext
 ```mermaid
 graph LR;
   Clients --> IngestionService;
-  IngestionService --> Raw Storage;
+  IngestionService --> RawEventsStore;
+  RawEventsStore --> IngestionService;
   IngestionService --> Kafka;
-  Kafka --> Druid (Kafka connector);
+  Kafka --> DruidKafkaConnector;
+  DruidKafkaConnector --> Druid;
   Druid --> QueryService;
   QueryService --> Dashboards
 ```
