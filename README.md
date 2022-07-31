@@ -124,17 +124,30 @@ is usually the case with the metrics. Current design of the metricsDB can be ext
 ```mermaid
 graph LR;
   Clients --> IngestionService;
-  IngestionService --> RawEventsStore;
-  RawEventsStore --> IngestionService;
+  RawEventsStore --> DruidHadoopConnector;
+  DruidHadoopConnector --> Druid;
   IngestionService --> Kafka;
+  Kafka --> RawEventsStore;
   Kafka --> DruidKafkaConnector;
   DruidKafkaConnector --> Druid;
   Druid --> QueryService;
   QueryService --> Dashboards
 ```
-1. Ingestion service
-   Clients --> IngestionService;
-   IngestionService --> Kafka Stream --> ApacheDruid Kafka Connector --> QueryService -->
+1. Why separate ingestion and query services?
+   - Read and write requests are way disproportionate. And services handling read and write apis need to scale differently,
+   write api needs to be scaled with number of requests and read apis need to be scaled with the number of customers 
+   accessing dashboards.
+2. Why Kafka?
+   - The idea is to implement low latency and fire and forget ingestion service. Ingestion service can achieve low latencies
+   if it puts the event in a stream or queue and returns to client. Further ingestion service can achieve lower latencies by
+   asynchronously handling the request from client.
+3. Why RawEventsStore?
+   - Following best practices of storing the source of truth so that system can be fault-tolerant by replaying the events
+   from Raw events store in case of any issues with the system.
+4. Why Druid?
+   - [Druid](http://static.druid.io/docs/druid.pdf) is OLAP system that can handle ingesting high volume of events and serving the metrics in realtime. Under the hood,
+   druid uses [Concise algorithm](https://arxiv.org/abs/1004.0403) to store bitmaps which is variation of Roaring bitmaps
+   used in this demo implementation. Druid serves all the requirements mentioned in this doc.
 ## Install
 ```
 gradle clean build
