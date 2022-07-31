@@ -111,6 +111,8 @@ update hour bitmap in table 3 if exists
 add (bytesRx, bytesTx) to table 2.
 ```
 ## Scaling Parameters
+Write API is constant time. Read API is O(combinations of source_app, dest_app and vpc_id). Both read and write apis can
+be scaled not depending on number of events incoming.
 ## Next
 This service is designed to work for querying by hour and grouping by the combination of source_app, destination_app and 
 vpc_id. Service can be extended to slice and dice by any combination of hour, source_app, destination_app and vpc_id with
