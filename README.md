@@ -14,7 +14,6 @@ The goal of the service is to accept monitoring events, aggregating them and ret
 - Fire and forget
     - Clients that are submitting events to this service could be sidecar containers submitting network flows or the service
   asynchronously submitting events. These clients need to be quite small, so calls to Write API need to be very quick.
-  
 - Low write latencies
   - Services publishing events to this service should not be burdened with higher latencies. Essentially there should not 
   be significant impact on the performance of the service publishing events to this service.
@@ -23,6 +22,17 @@ The goal of the service is to accept monitoring events, aggregating them and ret
 - Near real time availability of metrics
   - Slight delay must be tolerated between the time event is submitted and the event is available, but the experience of
   the customer should be real time, so the delay should be less than few seconds.
+- Store raw events
+  - Store raw events before converted to metrics. Raw events would be used to backfill the data in case of any issues with
+  the service deployments. Raw events would serve as source of truth. 
+- Batch mode
+  - Currently service only accepts realtime events. Service should be extended to accept events in batch mode so that 
+  any events that might have failed in realtime would be picked up. In batch mode, service reads from raw events and update
+  the aggregations while serving those aggregations.
+- Out of order events
+  - Current design does not implement this, but future versions of this service should have this feature to better serve
+  real time metrics. Service must have time window, all the requests do not fall in that window will be rejected. These
+  events can later be injected in batch mode.
   
 ## Demo Design
 This service exposes 2 APIs: GET /flows?hour=hour and POST /flows. Read API returns list of events aggregated by
@@ -34,7 +44,7 @@ of metrics. In this design, only sum aggregation is supported. Flow attributes h
 are dimensions and bytes rx and bytes tx are metrics. 
 
 Current implementation is backed by flows db implemented using [Roaring bitmap](https://github.com/RoaringBitmap/RoaringBitmap).
-In current implementations, only 2 dimensions are created: hour and combination of source_app, destination_app and vpc_id
+In the current implementation, only 2 dimensions are created: hour and combination of source_app, destination_app and vpc_id
 referred as flow_key. As part of this demo, Read API is only interested in aggregating by flow_key and filtered by hour, 
 which is why 2 dimensions are sufficient.
 
@@ -74,16 +84,51 @@ Table 4
 | app1,app3,vpc1 | [5, 6, 7]           |
 | app2,app4,vpc1 | [8, 9]              |
 
-For example, data in table 1 is represented as data structures in table 2, 3 and 4.
+For example, data in table 1 is represented as data structures in table 2, 3 and 4. 
+```
+GET /flows?hour=2
 
+metrics = array of metric values in Table 2.
+hour_2_bitmap = look up table 3.
+flows = empty list
+for each flow_key in table 4
+   masked = bitmap(flow_key) & hour_2_bitmap
+   aggregated_metrics = (indices(masked), metrics)
+   flow = (flow_key, hour_2, aggregated_metrics)
+   add flow to flows
+return flows
+```
+```
+POST /flows
+{flow}
+
+hour = hour(flow)
+flow_key = (src_app(flow), dest_app(flow), vpc_id(flow))
+add flow_key bitmap to table 4 if not exists.
+update flow_key bitmap in table 4 if exists
+add hour bitmap to table 3 if not exists
+update hour bitmap in table 3 if exists
+add (bytesRx, bytesTx) to table 2.
+```
+## Scaling Parameters
 ## Next
 This service is designed to work for querying by hour and grouping by the combination of source_app, destination_app and 
 vpc_id. Service can be extended to slice and dice by any combination of hour, source_app, destination_app and vpc_id with
-trivial changes to the code base. But extending to grouping by additional combinations of dimensions is limited. We can 
-achieve group by any dimension and filter by hour by maintaining multiple bitmaps for every hour. Every hour would have 
-bitmap to the dimension values. Dimension values are stored as strings but inorder to maintain bitmaps for 
-dimension values, dimension values must be converted to integers.
+trivial changes to the code base. But extending to grouping by additional combinations of dimensions is limited.
+### Partitioning
+This service maintains data structures for all the data in one place. Data need to be partitioned to be available and 
+scalable. Time (hour) can be used to partition the data assuming that time(hour) is always used to index the metrics which
+is usually the case with the metrics. Current design of the metricsDB can be extended to partition the data by hour.
 
+## Production System
+```mermaid
+graph TD;
+  A --> B;
+  B --> C;
+```
+1. Ingestion service
+   Clients --> IngestionService;
+   IngestionService --> Kafka Stream --> ApacheDruid Kafka Connector --> QueryService -->
 ## Install
 ```
 gradle clean build
