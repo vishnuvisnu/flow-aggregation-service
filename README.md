@@ -122,9 +122,13 @@ is usually the case with the metrics. Current design of the metricsDB can be ext
 
 ## Production System
 ```mermaid
-graph TD;
-  A --> B;
-  B --> C;
+graph LR;
+  Clients --> IngestionService;
+  IngestionService --> Raw Storage;
+  IngestionService --> Kafka;
+  Kafka --> Druid (Kafka connector);
+  Druid --> QueryService;
+  QueryService --> Dashboards
 ```
 1. Ingestion service
    Clients --> IngestionService;
