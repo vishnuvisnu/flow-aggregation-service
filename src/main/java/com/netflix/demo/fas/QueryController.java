@@ -24,6 +24,11 @@ public class QueryController {
 	@GetMapping("/flows")
 	@ResponseBody
 	public List<Flow> flows(@RequestParam final int hour) throws FlowsNotFoundException {
-		return flowsDB.get(hour);
+		final List<Flow> flows = flowsDB.get(hour);
+//		for (final Flow flow : flows) {
+//			System.out.println("Flow is " + flow.toString());
+//		}
+
+		return flows;
 	}
 }

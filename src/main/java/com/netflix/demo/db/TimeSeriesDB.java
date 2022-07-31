@@ -52,13 +52,15 @@ public class TimeSeriesDB {
         final Map<String, int[]> grouped = new HashMap<>();
         for (final Map.Entry<String, Bitmap> row : groupByCol.entrySet()) {
             final int[] indices = row.getValue().and(filterMap);
-            final int[] metricValues = new int[metricCount];
-            for (final int index : indices) {
-                for (int i = 0; i < metricCount; i++) {
-                    metricValues[i] += this.metrics.get(index)[i];
+            if (indices.length != 0) {
+                final int[] metricValues = new int[metricCount];
+                for (final int index : indices) {
+                    for (int i = 0; i < metricCount; i++) {
+                        metricValues[i] += this.metrics.get(index)[i];
+                    }
                 }
+                grouped.put(row.getKey(), metricValues);
             }
-            grouped.put(row.getKey(), metricValues);
         }
 
         return grouped;

@@ -25,20 +25,12 @@ public class TimeSeriesDBTest {
 
    TimeSeriesDB fillDB() {
       final TimeSeriesDB timeSeriesDB = new TimeSeriesDB(2);
-      for (int i = 0; i < 10; i++) {
-         addDimensions("100", "600", 100, 200, timeSeriesDB);
-      }
 
       for (int i = 0; i < 5; i++) {
-         addDimensions("800", "600", 150, 120, timeSeriesDB);
-      }
-
-      for (int i = 0; i < 5; i++) {
-         addDimensions("500", "600", 300, 400, timeSeriesDB);
-      }
-
-      for (int i = 0; i < 5; i++) {
-         addDimensions("500", "700", 500, 600, timeSeriesDB);
+         addDimensions("dim1Val1", "dim2Val1", 100, 200, timeSeriesDB);
+         addDimensions("dim1Val1", "dim2Val2", 150, 120, timeSeriesDB);
+         addDimensions("dim1Val2", "dim2Val2", 300, 400, timeSeriesDB);
+         addDimensions("dim1Val3", "dim2Val2", 500, 600, timeSeriesDB);
       }
 
       return timeSeriesDB;
@@ -48,9 +40,9 @@ public class TimeSeriesDBTest {
    void testGroupBySuccess() throws FlowsNotFoundException {
       LOG.trace("testGroupBySuccess");
       final TimeSeriesDB timeSeriesDB = fillDB();
-      final Map<String, int[]> grouped = timeSeriesDB.group("dim1", "dim2", "600");
-      Assertions.assertThat(grouped.get("500")).isEqualTo(new int[]{1500, 2000});
-      Assertions.assertThat(grouped.get("100")).isEqualTo(new int[]{1000, 2000});
-      Assertions.assertThat(grouped.get("800")).isEqualTo(new int[]{750, 600});
+      final Map<String, int[]> grouped = timeSeriesDB.group("dim1", "dim2", "dim2Val2");
+      Assertions.assertThat(grouped.get("dim1Val1")).isEqualTo(new int[]{750, 600});
+      Assertions.assertThat(grouped.get("dim1Val2")).isEqualTo(new int[]{1500, 2000});
+      Assertions.assertThat(grouped.get("dim1Val3")).isEqualTo(new int[]{2500, 3000});
    }
 }
