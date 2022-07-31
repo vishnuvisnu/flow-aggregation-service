@@ -12,7 +12,7 @@ import java.util.List;
 public class IngestionControllerTest {
 
     @Test
-    void testPostSuccess1() throws FlowsNotFoundException {
+    void testPostSuccess_groupAllPerHour() throws FlowsNotFoundException {
         final IngestionController ingestion = new IngestionController();
         final List<Flow> flows = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -30,7 +30,7 @@ public class IngestionControllerTest {
     }
 
     @Test
-    void testPostSuccess2() throws FlowsNotFoundException {
+    void testPostSuccess_groupAllSingleHour() throws FlowsNotFoundException {
         final IngestionController ingestion = new IngestionController();
         final List<Flow> flows = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -47,7 +47,7 @@ public class IngestionControllerTest {
     }
 
     @Test
-    void testPostSuccess3() throws FlowsNotFoundException {
+    void testPostSuccess_noGroupingPerHour() throws FlowsNotFoundException {
         final IngestionController ingestion = new IngestionController();
         final List<Flow> flows = new ArrayList<>();
         for (int i = 100; i < 10000; i++) {
@@ -66,7 +66,7 @@ public class IngestionControllerTest {
     }
 
     @Test
-    void testPostSuccess4() throws FlowsNotFoundException {
+    void testPostSuccess_oneSingleLargeGroupPerHour() throws FlowsNotFoundException {
         final IngestionController ingestion = new IngestionController();
         final List<Flow> flows = new ArrayList<>();
         for (int i = 10000; i < 20000; i++) {
@@ -84,7 +84,7 @@ public class IngestionControllerTest {
     }
 
     @Test
-    void testPostSuccess5() throws FlowsNotFoundException {
+    void testPostSuccess_largeGroupPerHour_noGroupingPerHour() throws FlowsNotFoundException {
         final IngestionController ingestion = new IngestionController();
         final List<Flow> flows = new ArrayList<>();
         for (int i = 20000; i < 30000; i++) {
