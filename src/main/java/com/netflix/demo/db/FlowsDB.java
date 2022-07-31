@@ -21,20 +21,20 @@ public class FlowsDB {
         }
         return db;
     }
-    private final TimeSeriesDB timeSeriesDB;
+    private final MetricsDB metricsDB;
     private FlowsDB() {
         // Instantiating with 2 as flows currently have 2 metrics: bytesRx and bytesTx.
-        timeSeriesDB = new TimeSeriesDB(2);
+        metricsDB = new MetricsDB(2);
     }
 
     @VisibleForTesting
-    protected FlowsDB(final TimeSeriesDB timeSeriesDB) {
-        this.timeSeriesDB = timeSeriesDB;
+    protected FlowsDB(final MetricsDB metricsDB) {
+        this.metricsDB = metricsDB;
     }
     public List<Flow> get(final int hour) throws FlowsNotFoundException {
 
         final List<Flow> flows = new ArrayList<>();
-        final Map<String, int[]> metrics =  timeSeriesDB.group(COMBO_DIMENSION_VALUE, HOUR_DIMENSION_NAME, Integer.toString(hour));
+        final Map<String, int[]> metrics =  metricsDB.group(COMBO_DIMENSION_VALUE, HOUR_DIMENSION_NAME, Integer.toString(hour));
         for (final Map.Entry<String, int[]> metric : metrics.entrySet()) {
             final int[] values = metric.getValue();
             final String flowKey = metric.getKey();
@@ -51,6 +51,6 @@ public class FlowsDB {
         final String flowKey = String.join(",", flow.getSrcApp(), flow.getDestApp(), flow.getVpcId());
         dimensions.put(COMBO_DIMENSION_VALUE, flowKey);
 
-        timeSeriesDB.put(dimensions, new int[] {flow.getBytesRx(), flow.getBytesTx()});
+        metricsDB.put(dimensions, new int[] {flow.getBytesRx(), flow.getBytesTx()});
     }
 }

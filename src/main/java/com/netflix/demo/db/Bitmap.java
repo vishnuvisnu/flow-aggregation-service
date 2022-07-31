@@ -1,5 +1,6 @@
 package com.netflix.demo.db;
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -12,6 +13,7 @@ public class Bitmap {
         rbm = new RoaringBitmap();
     }
 
+    @VisibleForTesting
     public Bitmap(final RoaringBitmap rbm) {
         this.rbm = rbm;
     }

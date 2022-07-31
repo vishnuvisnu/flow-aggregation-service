@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TimeSeriesDB {
-    private Logger logger = LoggerFactory.getLogger(TimeSeriesDB.class);
+public class MetricsDB {
+    private Logger logger = LoggerFactory.getLogger(MetricsDB.class);
     @Getter
     private final List<int[]> metrics;
 
@@ -20,7 +20,7 @@ public class TimeSeriesDB {
     @Getter
     private final Map<String, Map<String, Bitmap>> bitMaps;
 
-    public TimeSeriesDB(final int metricCount) {
+    public MetricsDB(final int metricCount) {
         metrics = new ArrayList<>();
         this.metricCount = metricCount;
         bitMaps = new HashMap<>();

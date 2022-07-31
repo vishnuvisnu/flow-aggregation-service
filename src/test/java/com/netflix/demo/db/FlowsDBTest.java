@@ -21,14 +21,14 @@ public class FlowsDBTest {
     private static final String COMBO_DIMENSION_VALUE = "SrcAppDestAppVpcId";
 
     @Mock
-    TimeSeriesDB timeSeriesDBMock;
+    MetricsDB metricsDBMock;
 
     @Test
     void testGroupSuccess() throws FlowsNotFoundException {
-        final FlowsDB flowsDB = new FlowsDB(timeSeriesDBMock);
+        final FlowsDB flowsDB = new FlowsDB(metricsDBMock);
         final Map<String, int[]> metrics = new HashMap<>();
         metrics.put("srcApp,destApp,vpcId", new int[]{10, 20});
-        Mockito.when(timeSeriesDBMock.group(COMBO_DIMENSION_VALUE, HOUR_DIMENSION_NAME, "1"))
+        Mockito.when(metricsDBMock.group(COMBO_DIMENSION_VALUE, HOUR_DIMENSION_NAME, "1"))
                .thenReturn(metrics);
         final List<Flow> flows = flowsDB.get(1);
         Assertions.assertThat(flows.size()).isEqualTo(1);
@@ -43,12 +43,12 @@ public class FlowsDBTest {
 
     @Test
     void testPutSuccess() {
-        final FlowsDB flowsDB = new FlowsDB(timeSeriesDBMock);
+        final FlowsDB flowsDB = new FlowsDB(metricsDBMock);
         final Flow flow = new Flow("srcApp", "destApp", "vpcId", 1, 10, 20);
         final Map<String, String> dimensions = new HashMap<>();
         dimensions.put(HOUR_DIMENSION_NAME, "1");
         dimensions.put(COMBO_DIMENSION_VALUE, "srcApp,destApp,vpcId");
-        Mockito.doNothing().when(timeSeriesDBMock).put(dimensions, new int[] {10, 20});
+        Mockito.doNothing().when(metricsDBMock).put(dimensions, new int[] {10, 20});
 
         flowsDB.put(flow);
     }
