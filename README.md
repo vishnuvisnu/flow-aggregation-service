@@ -134,7 +134,7 @@ for i in {1..10}; do
   curl -X POST "http://localhost:8080/flows" -H 'Content-Type: application/json' -d '[{"src_app": "foo'"${i}"'", "dest_app": "bar", "vpc_id": "vpc-0", "bytes_tx":220, "bytes_rx": 150, "hour": 6}]' &
 done
 ```
-
+Used above script to sanity test, verified manually that all the combinations look good and also wrote unit tests to cover multiple combinations of input data.
 ## Install
 ```
 gradle clean build
