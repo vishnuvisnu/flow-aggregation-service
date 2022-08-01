@@ -13,9 +13,9 @@ Each flow consist of hour, source_app, destination_app, vpc_id, bytes rx and byt
 of metrics. In this design, only sum aggregation is supported. Flow attributes hour, source_app, destination_app and vpc_id 
 are dimensions and bytes rx and bytes tx are metrics. 
 
-Current implementation is backed by flows db implemented using [Roaring bitmap](https://github.com/RoaringBitmap/RoaringBitmap).
+Current implementation is backed by [metrics db](https://github.com/vishnuvisnu/flow-aggregation-service/blob/main/src/main/java/com/netflix/demo/db/MetricsDB.java#L13) implemented using [Roaring bitmap](https://github.com/RoaringBitmap/RoaringBitmap).
 In the current implementation, only 2 dimensions are created: hour and combination of source_app, destination_app and vpc_id
-referred as flow_key. As part of this demo, Read API is only interested in aggregating by flow_key and filtered by hour, 
+referred as flow_key. As part of this demo, Read API is only interested in aggregating by flow_key and grouped by hour, 
 which is why 2 dimensions are sufficient.
 
 Table 1
@@ -86,11 +86,12 @@ be scaled not depending on number of events incoming.
 ## Next
 This service is designed to work for querying by hour and grouping by the combination of source_app, destination_app and 
 vpc_id. Service can be extended to slice and dice by any combination of hour, source_app, destination_app and vpc_id with
-trivial changes to the code base. But extending to grouping by additional combinations of dimensions is limited.
+trivial changes to the code base.
 ### Partitioning
-This service maintains data structures for all the data in one place. Data need to be partitioned to be available and 
-scalable. Time (hour) can be used to partition the data assuming that time(hour) is always used to index the metrics which
-is usually the case with the metrics. Current design of the metricsDB can be extended to partition the data by hour.
+This service maintains data structures for all the data in one place. Data need to be partitioned for the service to be 
+available and scalable. Time (hour) can be used to partition the data assuming that time(hour) is always used to index 
+the metrics which is usually the case with the metrics. Current design of the metricsDB can be extended to partition 
+the data by hour.
 
 ## Install
 ```
