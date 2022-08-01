@@ -18,6 +18,8 @@ In the current implementation, only 2 dimensions are created: hour and combinati
 referred as flow_key. As part of this demo, Read API is only interested in aggregating by flow_key and grouped by hour, 
 which is why 2 dimensions are sufficient.
 
+Flows are that are shown in Table 1 are represented by combination of data structures defined in Table 2, 3 and 4.
+
 Table 1
 
 | Hour | Source App | Dest App | Vpc Id  | Bytes Rx | Bytes Tx |     
@@ -54,7 +56,8 @@ Table 4
 | app1,app3,vpc1 | [5, 6, 7]           |
 | app2,app4,vpc1 | [8, 9]              |
 
-For example, data in table 1 is represented as data structures in table 2, 3 and 4. 
+### Read API implementation
+
 ```
 GET /flows?hour=2
 
@@ -68,6 +71,9 @@ for each flow_key in table 4
    add flow to flows
 return flows
 ```
+
+### Write API implementation
+
 ```
 POST /flows
 {flow}
@@ -81,16 +87,16 @@ update hour bitmap in table 3 if exists
 add (bytesRx, bytesTx) to table 2.
 ```
 ## Scaling Parameters
-Write API is constant time. Read API is O(combinations of source_app, dest_app and vpc_id). Both read and write apis can
-be scaled not depending on number of events incoming.
+Write API is constant time. Read API is O(number of combinations of source_app, dest_app and vpc_id). Both read and write apis can
+be scaled not depending on number of incoming events. Data need to be partitioned to maintain this scaling parameters for this service.
 ## Next
-This service is designed to work for querying by hour and grouping by the combination of source_app, destination_app and 
+This service is designed to work for grouping by hour and aggregating by the combination of source_app, destination_app and 
 vpc_id. Service can be extended to slice and dice by any combination of hour, source_app, destination_app and vpc_id with
 trivial changes to the code base.
 ### Partitioning
 This service maintains data structures for all the data in one place. Data need to be partitioned for the service to be 
 available and scalable. Time (hour) can be used to partition the data assuming that time(hour) is always used to index 
-the metrics which is usually the case with the metrics. Current design of the metricsDB can be extended to partition 
+the metrics which is usually the case with the operational metrics. Current design of the metricsDB can be extended to partition 
 the data by hour.
 
 ## Testing
