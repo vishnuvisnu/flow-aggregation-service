@@ -22,18 +22,18 @@ Flows are that are shown in Table 1 are represented by combination of data struc
 
 Table 1
 
-| Hour | Source App | Dest App | Vpc Id  | Bytes Rx | Bytes Tx |     
-|------|------------|----------|---------|----------|----------|
-| 1    | app1       | app2     | vpc1    | 10       | 11       |
-| 1    | app1       | app2     | vpc1    | 20       | 21       |     
-| 2    | app1       | app2     | vpc1    | 30       | 31       |    
-| 2    | app1       | app2     | vpc1    | 40       | 41       |   
-| 2    | app1       | app2     | vpc1    | 50       | 51       |       
-| 2    | app1       | app3     | vpc1    | 60       | 61       |      
-| 2    | app1       | app3     | vpc1    | 70       | 71       |     
-| 2    | app1       | app3     | vpc1    | 80       | 81       |    
-| 2    | app2       | app4     | vpc1    | 90       | 91       |   
-| 2    | app2       | app4     | vpc1    | 100      | 101      |  
+| Row | Hour | Source App | Dest App | Vpc Id  | Bytes Rx | Bytes Tx |     
+|-----|------|------------|----------|---------|----------|----------|
+| 0   | 1    | app1       | app2     | vpc1    | 10       | 11       |
+| 1   | 1    | app1       | app2     | vpc1    | 20       | 21       |     
+| 2   | 2    | app1       | app2     | vpc1    | 30       | 31       |    
+| 3   | 2    | app1       | app2     | vpc1    | 40       | 41       |   
+| 4   | 2    | app1       | app2     | vpc1    | 50       | 51       |       
+| 5   | 2    | app1       | app3     | vpc1    | 60       | 61       |      
+| 6   | 2    | app1       | app3     | vpc1    | 70       | 71       |     
+| 7   | 2    | app1       | app3     | vpc1    | 80       | 81       |    
+| 8   | 2    | app2       | app4     | vpc1    | 90       | 91       |   
+| 9   | 2    | app2       | app4     | vpc1    | 100      | 101      |  
 
 Table 2
 
